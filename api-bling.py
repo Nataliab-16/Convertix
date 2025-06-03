@@ -96,12 +96,12 @@ def get_detalhes_vendas():
             contador_requisicoes += 1  # Contabiliza requisição vendedora
 
         resultados.append({
-            'id': dados_venda.get('id'),
-            'numero': dados_venda.get('numero'),
+            'id_venda': dados_venda.get('id'),
+            'numero_venda': dados_venda.get('numero'),
             'id_vendedora': id_vendedora,
             'nome_vendedora': nome_vendedora,
-            'data': dados_venda.get('data'),
-            'totalProdutos': dados_venda.get('totalProdutos')
+            'data_venda': dados_venda.get('data'),
+            'valor_total': dados_venda.get('totalProdutos')
         })
 
         contador_requisicoes += 1  # Contabiliza requisição venda
