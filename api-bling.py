@@ -1,14 +1,12 @@
-import base64
-import json
 from flask import Flask, redirect, request
 import os
 import requests
+import time
 from urllib.parse import urlencode
 from dotenv import load_dotenv
 
-# Bling permite até 3 requisições por segundo
+from auth_utils import carregar_tokens, salvar_tokens, refresh_access_token
 
-# Carregar variáveis do arquivo .env
 load_dotenv()
 app = Flask(__name__)
 
@@ -17,49 +15,6 @@ CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 AUTHORIZATION_URL = 'https://www.bling.com.br/Api/v3/oauth/authorize'
 TOKEN_URL = "https://bling.com.br/Api/v3/oauth/token"
 REDIRECT_URI = os.getenv('REDIRECT_URI')
-
-TOKENS_FILE = 'tokens.json'
-
-# Carregar tokens se existirem
-def carregar_tokens():
-    if os.path.exists(TOKENS_FILE):
-        with open(TOKENS_FILE, 'r') as f:
-            return json.load(f)
-    return {}
-
-# Salvar tokens no arquivo
-def salvar_tokens(tokens):
-    with open(TOKENS_FILE, 'w') as f:
-        json.dump(tokens, f)
-
-# Atualizar access_token usando refresh_token
-def refresh_access_token():
-    tokens = carregar_tokens()
-    refresh_token = tokens.get('refresh_token')
-    if not refresh_token:
-        print("Nenhum refresh_token encontrado.")
-        return
-
-    auth_header = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
-    headers = {
-        'Authorization': f"Basic {auth_header}",
-        'Content-Type': 'application/x-www-form-urlencoded',
-    }
-    data = {
-        'grant_type': 'refresh_token',
-        'refresh_token': refresh_token
-    }
-
-    response = requests.post(TOKEN_URL, headers=headers, data=data)
-    if response.status_code == 200:
-        token_data = response.json()
-        salvar_tokens({
-            'access_token': token_data.get('access_token'),
-            'refresh_token': token_data.get('refresh_token')
-        })
-        print("Access token renovado com sucesso.")
-    else:
-        print("Erro ao renovar token:", response.text)
 
 @app.route('/', methods=['GET'])
 def auth_bling():
@@ -101,14 +56,14 @@ def oauth_callback():
     return "Token de acesso obtido com sucesso.", 200
 
 @app.route('/pedidos/vendas', methods=['GET'])
-def get_pedidos_compras():
+def get_detalhes_vendas():
     tokens = carregar_tokens()
     access_token = tokens.get('access_token')
     if not access_token:
         return {"error": "Token de acesso não encontrado. Faça login via / para obter um novo token."}, 401
 
     refresh_access_token()
-    tokens = carregar_tokens()  
+    tokens = carregar_tokens()
     access_token = tokens.get('access_token')
 
     headers = {
@@ -116,28 +71,40 @@ def get_pedidos_compras():
         'Accept': 'application/json'
     }
 
-    pedidos_url = f'https://www.bling.com.br/Api/v3/pedidos/vendas'
-
-    response = requests.get(pedidos_url, headers=headers)
+    lista_url = 'https://www.bling.com.br/Api/v3/pedidos/vendas'
+    response = requests.get(lista_url, headers=headers)
     if response.status_code != 200:
-        return {"error": "Erro ao buscar pedidos", "detalhes": response.text}, response.status_code
+        return {"error": "Erro ao buscar lista de pedidos", "detalhes": response.text}, response.status_code
 
-
-    dados = response.json()
+    lista_vendas = response.json().get('data', [])
     resultados = []
+    contador_requisicoes = 0
 
-    for pedido in dados.get('data', []):
-        data_emissao = pedido.get('data', 'Data não encontrada')
-        nome_vendedora = pedido.get('vendedor', {}).get('nome', 'Vendedora não identificada')
-        numero = pedido.get('numero', 'Número não encontrado')
+    for venda in lista_vendas:
+        id_venda = venda.get('id')
+        if not id_venda:
+            continue
 
-    resultados.append({
-        'numero': numero,
-        'data_emissao': data_emissao,
-        'vendedora': nome_vendedora
-    })
+        detalhes_url = f'https://www.bling.com.br/Api/v3/pedidos/vendas/{id_venda}'
+        detalhes_response = requests.get(detalhes_url, headers=headers)
 
-    return {"pedidos": resultados}, 200
+        if detalhes_response.status_code == 200:
+            dados = detalhes_response.json().get('data', {})
+            resultados.append({
+                'id': dados.get('id'),
+                'numero': dados.get('numero'),
+                'id_vendedora': dados.get('vendedor', {}).get('id'),
+                'data': dados.get('data'),
+                'totalProdutos': dados.get('totalProdutos')
+            })
+        else:
+            print(f"Erro ao buscar detalhes da venda {id_venda}: {detalhes_response.text}")
+
+        contador_requisicoes += 1
+        if contador_requisicoes % 3 == 0:
+            time.sleep(1)
+
+    return {"vendas": resultados}, 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
