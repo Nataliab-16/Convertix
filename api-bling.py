@@ -2,6 +2,7 @@ from flask import Flask, redirect, request
 import os
 import requests
 import time
+import base64
 from urllib.parse import urlencode
 from dotenv import load_dotenv
 
@@ -79,6 +80,7 @@ def get_detalhes_vendas():
     lista_vendas = response.json().get('data', [])
     resultados = []
     contador_requisicoes = 0
+    cache_vendedoras = {}
 
     for venda in lista_vendas:
         id_venda = venda.get('id')
@@ -88,19 +90,38 @@ def get_detalhes_vendas():
         detalhes_url = f'https://www.bling.com.br/Api/v3/pedidos/vendas/{id_venda}'
         detalhes_response = requests.get(detalhes_url, headers=headers)
 
-        if detalhes_response.status_code == 200:
-            dados = detalhes_response.json().get('data', {})
-            resultados.append({
-                'id': dados.get('id'),
-                'numero': dados.get('numero'),
-                'id_vendedora': dados.get('vendedor', {}).get('id'),
-                'data': dados.get('data'),
-                'totalProdutos': dados.get('totalProdutos')
-            })
-        else:
+        if detalhes_response.status_code != 200:
             print(f"Erro ao buscar detalhes da venda {id_venda}: {detalhes_response.text}")
+            continue
 
-        contador_requisicoes += 1
+        dados = detalhes_response.json().get('data', {})
+        id_vendedora = dados.get('vendedor', {}).get('id')
+        nome_vendedora = None
+
+        if id_vendedora:
+            if id_vendedora in cache_vendedoras:
+                nome_vendedora = cache_vendedoras[id_vendedora]
+            else:
+                vendedora_url = f'https://www.bling.com.br/Api/v3/vendedores/{id_vendedora}'
+                vendedora_response = requests.get(vendedora_url, headers=headers)
+                if vendedora_response.status_code == 200:
+                    nome_vendedora = vendedora_response.json().get('data', {}).get('contato', {}).get('nome')
+                    cache_vendedoras[id_vendedora] = nome_vendedora
+                else:
+                    print(f"Erro ao buscar nome da vendedora {id_vendedora}: {vendedora_response.text}")
+
+                contador_requisicoes += 1
+
+        resultados.append({
+            'id': dados.get('id'),
+            'numero': dados.get('numero'),
+            'id_vendedora': id_vendedora,
+            'nome_vendedora': nome_vendedora,
+            'data': dados.get('data'),
+            'totalProdutos': dados.get('totalProdutos')
+        })
+
+        contador_requisicoes += 1  # Conta a requisição do pedido
         if contador_requisicoes % 3 == 0:
             time.sleep(1)
 
