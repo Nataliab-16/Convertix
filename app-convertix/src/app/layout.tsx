@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className="poppins-regular">
         <Header/>
         {children}
-        <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
       </body>
     </html>
   );
