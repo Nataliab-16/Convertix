@@ -4,7 +4,8 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import html2canvas from "html2canvas";
 import GraficoDeVendas from "@/components/GraficoVendas";
 import Sidebar from "@/components/Sidebar";
 
@@ -39,7 +40,9 @@ export default function Home() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const exportarPDF = () => {
+  const chartRef = useRef<HTMLDivElement>(null);
+
+  const exportarPDF = async () => {
     const doc = new jsPDF();
     doc.text("Relatório de Conversões", 14, 10);
 
@@ -51,11 +54,28 @@ export default function Home() {
         tentativas.toString(),
         taxa,
       ]),
+      startY: 20,
       styles: { fontSize: 10 },
     });
 
+    // Posição abaixo da tabela
+    const finalY = (doc as any).lastAutoTable.finalY + 15;
+
+    // Captura o gráfico como imagem
+    if (chartRef.current) {
+      const canvas = await html2canvas(chartRef.current);
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdfWidth = doc.internal.pageSize.getWidth() - 20;
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      doc.text("Gráfico de Conversões", 14, finalY);
+      doc.addImage(imgData, "PNG", 10, finalY + 5, pdfWidth, pdfHeight);
+    }
+
     doc.save("Relatorio.pdf");
   };
+
 
   return (
     <div className="flex min-h-screen">
@@ -142,7 +162,7 @@ export default function Home() {
         <h2 className="text-lg font-bold mb-4">Gráficos</h2>
 
         <div className="mb-8">
-          <GraficoDeVendas />
+          <GraficoDeVendas ref={chartRef} />
         </div>
 
         <div className="mb-4">
