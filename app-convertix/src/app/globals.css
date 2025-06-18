@@ -24,6 +24,14 @@
   .bg-convertix-white {
     background-color: var(--color-convertix-white);
   }
+
+  .text-convertix-primary {
+    color: var(--color-convertix-primary) !important; 
+  }
+
+  .text-convertix-secondary {
+    color: var(--color-convertix-secondary);
+  }
   
   .poppins-light {
     font-family: "Poppins", system-ui;

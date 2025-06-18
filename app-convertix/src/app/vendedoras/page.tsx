@@ -7,7 +7,8 @@ export default function CadastroVendedora() {
     const [imagens, setImagens] = useState<File[]>([]);
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
     const inputFileRef = useRef<HTMLInputElement>(null);
-
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    
     // Atualiza imagens e previews
     const handleImagensChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
@@ -31,11 +32,11 @@ export default function CadastroVendedora() {
             return;
         }
 
-        // Aqui você pode fazer o envio para backend / ML etc
+        // Fazer o envio para backend / ML 
         console.log("Nome:", nome);
         console.log("Imagens:", imagens);
 
-        alert("Cadastro enviado (ver console).");
+        alert("Cadastro enviado.");
 
         // Limpar formulário
         setNome("");
@@ -50,7 +51,7 @@ export default function CadastroVendedora() {
 
     return (
         <div className="flex min-h-screen">
-            <Sidebar />
+            <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
             <div className="max-w-md mx-auto p-4">
                 <h1 className="text-2xl font-bold my-10">Cadastro de Vendedora</h1>
                 <form onSubmit={handleSubmit} className="space-y-4">

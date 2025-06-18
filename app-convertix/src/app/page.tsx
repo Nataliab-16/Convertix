@@ -28,12 +28,18 @@ const exportarPDF = () => {
 export default function Home() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   
   return (
     <div className="flex min-h-screen">
-      <Sidebar/>
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
 
-      <main className="flex-1 p-4">
+      <main className={`
+      flex-1 p-4
+      transition-all duration-300
+      ${sidebarOpen ? 'ml-64 md:ml-64' : 'ml-0'}
+    `}>
         <div className="flex items-center gap-2">
           <div className="relative max-w-sm">
             <div className="z-10 absolute inset-y-0 left-0 flex items-center pl-3">
@@ -45,7 +51,7 @@ export default function Home() {
               selected={startDate}
               onChange={(date) => setStartDate(date)}
               placeholderText="Data de início"
-              className="pl-10 w-full py-2.5 px-4 text-sm text-gray-300 bg-white border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 "
+              className="pl-10 w-full py-2.5 px-4 text-sm text-gray-500 bg-white border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 "
               dateFormat="dd/MM/yyyy"
             />
           </div>
