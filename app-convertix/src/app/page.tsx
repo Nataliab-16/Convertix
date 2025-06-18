@@ -61,13 +61,10 @@ export default function Home() {
     <div className="flex min-h-screen">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      <main
-        className={`flex-1 p-4 transition-all duration-300 ${
-          sidebarOpen ? "ml-64 md:ml-64" : "ml-0"
-        }`}
-      >
-        <div className="flex items-center gap-2">
-          <div className="relative max-w-sm">
+      <main className={`flex-1 p-4 transition-all duration-300 ${sidebarOpen ? "md:ml-64" : "ml-0"}`}>
+        <div className="flex flex-col sm:flex-row flex-nowrap items-center justify-center sm:items-center gap-4 mb-6">
+          {/* Data de início */}
+          <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 z-10">
               <CalendarIcon />
             </div>
@@ -75,14 +72,15 @@ export default function Home() {
               selected={startDate}
               onChange={(date) => setStartDate(date)}
               placeholderText="Data de início"
-              className="pl-10 w-full py-2.5 px-4 text-sm text-gray-500 bg-white border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              className="pl-10 w-full py-2.5 px-4 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
               dateFormat="dd/MM/yyyy"
             />
           </div>
 
-          <span>até</span>
+          <span className="text-center sm:mt-0 mt-1">até</span>
 
-          <div className="relative max-w-sm">
+          {/* Data de fim */}
+          <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 z-10">
               <CalendarIcon />
             </div>
@@ -93,40 +91,33 @@ export default function Home() {
               startDate={startDate}
               endDate={endDate}
               placeholderText="Data fim"
-              className="pl-10 w-full py-2.5 px-4 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              className="pl-10 w-full py-2.5 px-4 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
               dateFormat="dd/MM/yyyy"
             />
           </div>
         </div>
 
-        <button
-          type="button"
-          className="mt-4 text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800"
-        >
-          Gerar Relatório
-        </button>
+        <div className="mb-6 justify-center flex">
+          <button
+            type="button"
+            className=" w-full sm:w-auto text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
+          >
+            Gerar Relatório
+          </button>
+        </div>
 
-        <h2 className="m-4 text-lg poppins-bold">Painel de conversão</h2>
+        <h2 className="text-lg font-bold mb-4">Painel de conversão</h2>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <div className="overflow-x-auto mb-8">
+          <table className="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="px-6 py-3">
-                  Vendedora
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Conversões
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Tentativas
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Taxa de conversão
-                </th>
+                <th scope="col" className="px-4 py-3">Vendedora</th>
+                <th scope="col" className="px-4 py-3">Conversões</th>
+                <th scope="col" className="px-4 py-3">Tentativas</th>
+                <th scope="col" className="px-4 py-3">Taxa de conversão</th>
               </tr>
             </thead>
-
             <tbody>
               {sellersData.map(({ nome, conversoes, tentativas, taxa }) => (
                 <tr
@@ -135,31 +126,36 @@ export default function Home() {
                 >
                   <th
                     scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    className="px-4 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
                     {nome}
                   </th>
-                  <td className="px-6 py-4">{conversoes}</td>
-                  <td className="px-6 py-4">{tentativas}</td>
-                  <td className="px-6 py-4">{taxa}</td>
+                  <td className="px-4 py-4">{conversoes}</td>
+                  <td className="px-4 py-4">{tentativas}</td>
+                  <td className="px-4 py-4">{taxa}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        <h2 className="mx-4 my-8 text-lg poppins-bold">Gráficos</h2>
+        <h2 className="text-lg font-bold mb-4">Gráficos</h2>
 
-        <GraficoDeVendas />
+        <div className="mb-8">
+          <GraficoDeVendas />
+        </div>
 
-        <button
-          type="button"
-          onClick={exportarPDF}
-          className="my-4 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-        >
-          Exportar em PDF
-        </button>
+        <div className="mb-4">
+          <button
+            type="button"
+            onClick={exportarPDF}
+            className="w-full sm:w-auto text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+          >
+            Exportar em PDF
+          </button>
+        </div>
       </main>
+
     </div>
   );
 }

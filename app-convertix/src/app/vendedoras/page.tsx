@@ -66,7 +66,8 @@ export default function CadastroVendedora() {
   return (
     <div className="flex">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <div className="max-w-md mx-auto p-4">
+      
+      <div className="max-w-sm mx-auto p-5">
         <h1 className="text-2xl font-bold my-10">Cadastro de Vendedora</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
