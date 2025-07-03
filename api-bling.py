@@ -1,5 +1,7 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import os
+from datetime import datetime
+from flask_cors import CORS
 import requests
 import time
 from dotenv import load_dotenv
@@ -7,6 +9,7 @@ from auth_utils import auth_bp, carregar_tokens, salvar_tokens, refresh_access_t
 
 load_dotenv()
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:3000"])
 
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
@@ -26,9 +29,18 @@ def obter_headers(access_token):
         'Accept': 'application/json'
     }
 
-def buscar_lista_vendas(headers):
+def buscar_lista_vendas(headers,data_inicial=None, data_final=None):
     url = f'{API_BASE_URL}/pedidos/vendas'
-    resp = requests.get(url, headers=headers)
+    params = {}
+
+    if data_inicial:
+        params["dataInicial"] = f"{data_inicial}"
+    if data_final:
+        params["dataFinal"] = f"{data_final}"
+
+    print("🔍 Enviando parâmetros para a API:", params)
+
+    resp = requests.get(url, headers=headers, params=params)
     if resp.status_code != 200:
         raise Exception(f'Erro ao buscar lista de pedidos: {resp.text}')
     return resp.json().get('data', [])
@@ -65,11 +77,14 @@ def get_detalhes_vendas():
     refresh_access_token()
     tokens = carregar_tokens()
     access_token = tokens.get('access_token')
-
     headers = obter_headers(access_token)
 
+    # Captura os parâmetros de data
+    data_inicial = request.args.get("dataInicial")
+    data_final = request.args.get("dataFinal")
+
     try:
-        lista_vendas = buscar_lista_vendas(headers)
+        lista_vendas = buscar_lista_vendas(headers, data_inicial, data_final)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -93,7 +108,7 @@ def get_detalhes_vendas():
 
         if id_vendedora:
             nome_vendedora = buscar_nome_vendedora(id_vendedora, headers, cache_vendedoras)
-            contador_requisicoes += 1  # Contabiliza requisição vendedora
+            contador_requisicoes += 1
 
         resultados.append({
             'id_venda': dados_venda.get('id'),
@@ -104,9 +119,8 @@ def get_detalhes_vendas():
             'valor_total': dados_venda.get('totalProdutos')
         })
 
-        contador_requisicoes += 1  # Contabiliza requisição venda
+        contador_requisicoes += 1
 
-        # Controle simples de taxa de requisições
         if contador_requisicoes % RATE_LIMIT == 0:
             time.sleep(SLEEP_SECONDS)
 

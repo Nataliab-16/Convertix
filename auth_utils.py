@@ -6,6 +6,9 @@ from urllib.parse import urlencode
 import requests
 from dotenv import load_dotenv
 
+from sqlalchemy import create_engine, Column, String, Integer
+from sqlalchemy.orm import sessionmaker, declarative_base
+
 load_dotenv()
 
 auth_bp = Blueprint('auth', __name__)
@@ -17,7 +20,18 @@ REDIRECT_URI = os.getenv('REDIRECT_URI')
 AUTHORIZATION_URL = 'https://www.bling.com.br/Api/v3/oauth/authorize'
 TOKEN_URL = 'https://bling.com.br/Api/v3/oauth/token'
 
-TOKENS_FILE = os.path.join(os.path.dirname(__file__), 'tokens.json')
+# --- Configuração do banco SQLite com SQLAlchemy ---
+Base = declarative_base()
+engine = create_engine('sqlite:///tokens.db', echo=False)
+SessionLocal = sessionmaker(bind=engine)
+
+class Token(Base):
+    __tablename__ = 'tokens'
+    id = Column(Integer, primary_key=True)
+    access_token = Column(String, nullable=False)
+    refresh_token = Column(String, nullable=False)
+
+Base.metadata.create_all(engine)  # Cria a tabela caso não exista
 
 
 def _get_basic_auth_header(client_id=CLIENT_ID, client_secret=CLIENT_SECRET):
@@ -27,17 +41,33 @@ def _get_basic_auth_header(client_id=CLIENT_ID, client_secret=CLIENT_SECRET):
 
 
 def carregar_tokens():
-    """Carrega tokens do arquivo local JSON."""
-    if os.path.exists(TOKENS_FILE):
-        with open(TOKENS_FILE, 'r') as f:
-            return json.load(f)
+    """Carrega tokens do banco de dados."""
+    session = SessionLocal()
+    token = session.query(Token).first()
+    session.close()
+    if token:
+        return {
+            'access_token': token.access_token,
+            'refresh_token': token.refresh_token
+        }
     return {}
 
 
 def salvar_tokens(tokens):
-    """Salva tokens no arquivo local JSON."""
-    with open(TOKENS_FILE, 'w') as f:
-        json.dump(tokens, f)
+    """Salva tokens no banco de dados."""
+    session = SessionLocal()
+    token = session.query(Token).first()
+    if token:
+        token.access_token = tokens.get('access_token')
+        token.refresh_token = tokens.get('refresh_token')
+    else:
+        token = Token(
+            access_token=tokens.get('access_token'),
+            refresh_token=tokens.get('refresh_token')
+        )
+        session.add(token)
+    session.commit()
+    session.close()
 
 
 def obter_token_por_codigo(code):

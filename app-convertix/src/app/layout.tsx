@@ -15,7 +15,7 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
         <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
         
       </head>
-      <body className="poppins-regular">
+      <body className="poppins-regular w-full">
         <Header/>
         {children}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js" async defer></script>

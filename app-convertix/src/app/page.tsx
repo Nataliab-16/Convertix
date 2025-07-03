@@ -74,6 +74,10 @@ export default function Home() {
     }
 
     doc.save("Relatorio.pdf");
+
+
+
+
   };
 
 
@@ -119,6 +123,26 @@ export default function Home() {
 
         <div className="mb-6 justify-center flex">
           <button
+            onClick={async () => {
+              alert(`Relatório gerado de ${startDate ? startDate.toLocaleDateString() : "sem data de início"} até ${endDate ? endDate.toLocaleDateString() : "sem data de fim"}`);
+              const formatarParaAPI = (data: Date | null): string => {
+                return data ? data.toISOString().split("T")[0] : "";
+              };
+
+              const inicioFormatado = formatarParaAPI(startDate);
+              const fimFormatado = formatarParaAPI(endDate);
+              console.log(`Relatório gerado de ${inicioFormatado} até ${fimFormatado}`);
+
+              const url = `http://localhost:8080/pedidos/vendas?dataInicial=${inicioFormatado}&dataFinal=${fimFormatado}`;
+
+              try {
+                const resposta = await fetch(url);
+                const dados = await resposta.json();
+                console.log("Dados recebidos:", dados);
+              } catch (erro) {
+                console.error("Erro ao buscar relatório:", erro);
+              }
+            }}
             type="button"
             className=" w-full sm:w-auto text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
           >
