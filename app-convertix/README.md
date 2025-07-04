@@ -1,6 +1,4 @@
 
-![ChatGPT_Image_7_04_2025__20_14_07__1_](uploads/31bd2111388afa810b503d2b5a81d931/ChatGPT_Image_7_04_2025__20_14_07__1_.png)
-
 # Olá, esse é o Convértix! Seja bem-vindo(a)!
 
 
@@ -219,7 +217,7 @@ __Tecnologia e Integração__
 ![Blank_board](uploads/dbe0d5dabd02afcc597b012c169f1495/Blank_board.png)
 
 # 🗒️​ Diagrama de casos de uso
-![WhatsApp_Image_2025-05-12_at_20.16.22](uploads/78b409ed8113e738611dcb931595420e/WhatsApp_Image_2025-05-12_at_20.16.22.jpeg){width=660 height=450}
+![WhatsApp_Image_2025-05-12_at_20.16.22](docs-convertix/WhatsApp_Image_2025-05-12_at_20.16.22.jpeg){width=660 height=450}
 
 # 🔍 Estado da arte
 A integração de visão computacional com sistemas de gestão comercial representa um avanço significativo no monitoramento de desempenho em pontos de venda físicos. Nos últimos anos, diversas pesquisas e aplicações têm demonstrado o potencial da visão computacional para contabilizar o fluxo de pessoas, identificar padrões de comportamento e cruzar esses dados com indicadores de desempenho comercial.
