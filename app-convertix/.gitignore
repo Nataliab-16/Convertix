@@ -20,7 +20,7 @@
 
 # production
 /build
-tokens.db
+../tokens.db
 
 # misc
 .DS_Store
