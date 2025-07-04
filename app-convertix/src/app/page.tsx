@@ -1,5 +1,4 @@
 "use client";
-
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import DatePicker from "react-datepicker";
@@ -8,12 +7,6 @@ import { useState, useRef } from "react";
 import html2canvas from "html2canvas";
 import GraficoDeVendas from "@/components/GraficoVendas";
 import Sidebar from "@/components/Sidebar";
-
-const sellersData = [
-  { nome: "Ingrid Povóa", conversoes: 76, tentativas: 114, taxa: "58,8%" },
-  { nome: "Nicole Gonçalves", conversoes: 87, tentativas: 120, taxa: "64,7%" },
-  { nome: "Mariana Carvalho", conversoes: 79, tentativas: 98, taxa: "89,1%" },
-];
 
 function CalendarIcon() {
   return (
@@ -36,16 +29,16 @@ function CalendarIcon() {
 }
 
 export default function Home() {
+  
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  const [sellersData, setSellersData] = useState<{ nome: string; conversoes: number; tentativas: number; taxa: string }[]>([]);
   const chartRef = useRef<HTMLDivElement>(null);
 
   const exportarPDF = async () => {
     const doc = new jsPDF();
     doc.text("Relatório de Conversões", 14, 10);
-
     autoTable(doc, {
       head: [["Vendedora", "Conversões", "Tentativas", "Taxa de conversão"]],
       body: sellersData.map(({ nome, conversoes, tentativas, taxa }) => [
@@ -139,6 +132,28 @@ export default function Home() {
                 const resposta = await fetch(url);
                 const dados = await resposta.json();
                 console.log("Dados recebidos:", dados);
+                
+                // Agrupar vendas por nome_vendedora
+                const contagemPorVendedora: Record<string, number> = {};
+                dados.vendas.forEach((venda: any) => {
+                  const nome = venda.nome_vendedora || "Vendedora Desconhecida";
+                  contagemPorVendedora[nome] = (contagemPorVendedora[nome] || 0) + 1;
+                });
+
+                // Mock de tentativas
+                const tentativasMock: Record<string, number> = {
+                  "Nicole Gonçalves": 120,
+                  "Ingrid Povoa": 114,
+                  "Mariana Carvalho": 98,
+                };
+
+                const sellers = Object.entries(contagemPorVendedora).map(([nome, conversoes]) => {
+                  const tentativas = tentativasMock[nome] || 100; 
+                  const taxa = ((conversoes / tentativas) * 100).toFixed(1) + "%";
+                  return { nome, conversoes, tentativas, taxa };
+                });
+
+                setSellersData(sellers);
               } catch (erro) {
                 console.error("Erro ao buscar relatório:", erro);
               }
@@ -146,7 +161,10 @@ export default function Home() {
             type="button"
             className=" w-full sm:w-auto text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
           >
-            Gerar Relatório
+            Ver relatório do período
+          </button>
+          <button>
+            Gerar relatório do dia
           </button>
         </div>
 
