@@ -107,7 +107,7 @@ Diferente dos concorrentes, excluímos acompanhantes não compradores, melhorand
 Ao contrário das soluções que processam em tempo real, nosso sistema analisa os dados após o expediente, evitando consumo excessivo de recursos e priorizando eficiência.
 
 ✅ 3. Integração Nativa com PDV Bling
-Recebemos dados diretamente do Bling via arquivos CSV, tornando a integração mais fácil para empresas que já utilizam esse PDV.
+Recebemos dados diretamente do Bling via arquivos JSON, tornando a integração mais fácil para empresas que já utilizam esse PDV.
 
 ✅ 4. Dashboard Completo e Personalizado
 Além de mostrar número de clientes e taxa de conversão, o relatório pode ser filtrado por semana, mês, ano e vendedoras. Com geração de relatórios em PDF para download.
@@ -174,7 +174,7 @@ O usuário informará nome, e-mail, senha e confirmação da senha. Sendo todos 
 - RF06: O sistema deve permitir a geração de relatórios de conversão de vendas por período (semana, mês ou ano) e vendedoras.
 - RF07: Acompanhantes de clientes devem ser excluídos do registro.
 - RF08: Ao entrar em loja servidores como: Distribuidor de água mineral, faxineira, vendedores ambulantes e fornecedores, as vendedoras acionarão um componente IoT para que este capte os últimos 20 segundos (time stamp) em que a pessoa entrou na loja e grave os dados de horário em um banco de dados para ser ignorada dos registros. 
-- RF09: Acessar dados das vendas por integração com o sistema PDV bling, onde por meio deste receberemos arquivos csv para manipulação.
+- RF09: Acessar dados das vendas por integração com o sistema PDV bling, onde por meio deste receberemos arquivos JSON para manipulação.
 - RF10: A dashboard deve disponibilizar os relatórios para download em PDF.
 - RF11: A geração do relatório deve ser feita manualmente pelo gerente através da opção "Gerar Relatório".
 - RF12: O gerente deve poder acessar os dados de entrada total de clientes, vendas totais realizadas e taxa de conversão.
@@ -197,27 +197,23 @@ __Tecnologia e Integração__
 - RNF9: O relatório em PDF deve ser gerado automaticamente a partir dos dados do dashboard.
 - RNF10: O sistema deve ser compatível com integração ao PDV para correlacionar os dados de entrada com as compras realizadas.
 
-
-# 📆 Cronograma
-![image](uploads/ed266d3a54139c06479750ae8ff99e3c/image.png){width=499 height=468}
-
 # ⚙️​ Tecnologias 
-|  Área                  | Tecnologia               | Função                                           |
-| -----------------------| -------------------------| -------------------------------------------------|
-| Front-end              | Next.js + Bootstrap      | Interface web responsiva                         |
-| Back-end               | Express.js + Prisma      | API de controle de usuários, autenticação...     |
-| Banco de dados         | Neon (PostgreSQL)        | Banco de dados relacional                        |
-| Visão Computacional    | Tensorflow + Yolo + Flask| API dedicada para detecção facial                |
-| Autenticação           | JWT                      | Sistema seguro de login e sessão                 |
-| Criptografia           | bcrypt                   | Hash seguro de senhas de usuários                |
-| Funções Escaláveis     | AWS Lambda               | Executar geração de relatórios                   |
-| Base de dados          | API Bling                | Coletar dados das vendedoras e vendas            |
+|  Área                  | Tecnologia                            | Função                                           |
+| -----------------------| --------------------------------------| -------------------------------------------------|
+| Front-end              | Next.js + TailwindCSS + Flowbite      | Interface web responsiva                         |
+| Back-end               | Express.js + Prisma + Flask           | API de controle de usuários, autenticação...     |
+| Banco de dados         | Neon (PostgreSQL)                     | Banco de dados relacional                        |
+| Visão Computacional    | Tensorflow + Yolo + Flask             | API dedicada para detecção facial                |
+| Autenticação           | JWT                                   | Sistema seguro de login e sessão                 |
+| Criptografia           | bcrypt                                | Hash seguro de senhas de usuários                |
+| Funções Escaláveis     | AWS Lambda                            | Executar geração de relatórios                   |
+| Base de dados          | API Bling                             | Coletar dados das vendedoras e vendas            |
 
 # 🗒️​ Diagrama de classes
-![Blank_board](uploads/dbe0d5dabd02afcc597b012c169f1495/Blank_board.png)
+![Blank_board](docs-convertix/Blank_board.png)
 
 # 🗒️​ Diagrama de casos de uso
-![WhatsApp_Image_2025-05-12_at_20.16.22](docs-convertix/WhatsApp_Image_2025-05-12_at_20.16.22.jpeg){width=660 height=450}
+![WhatsApp_Image_2025-05-12_at_20.16.22](docs-convertix/WhatsApp_Image_2025-05-12_at_20.16.22.jpeg)
 
 # 🔍 Estado da arte
 A integração de visão computacional com sistemas de gestão comercial representa um avanço significativo no monitoramento de desempenho em pontos de venda físicos. Nos últimos anos, diversas pesquisas e aplicações têm demonstrado o potencial da visão computacional para contabilizar o fluxo de pessoas, identificar padrões de comportamento e cruzar esses dados com indicadores de desempenho comercial.
