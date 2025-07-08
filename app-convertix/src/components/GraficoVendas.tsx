@@ -12,11 +12,30 @@ import {
 } from "recharts";
 import React, { forwardRef } from "react";
 
-const data = [
-    { mes: "Jan", taxaIngrid: 79.4, taxaNicole: 50.2 },
-    { mes: "Fev", taxaIngrid: 67.7, taxaNicole: 43.9 },
-    { mes: "Mar", taxaIngrid: 58.8, taxaNicole: 69 },
-];
+const getUltimosMeses = (quantidade = 3) => {
+    const meses = [
+        "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+        "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+    ];
+
+    const hoje = new Date();
+    const resultado = [];
+
+    for (let i = quantidade - 1; i >= 0; i--) {
+        const data = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+        const nomeMes = meses[data.getMonth()];
+
+        resultado.push({
+            mes: nomeMes,
+            taxaIngrid: parseFloat((Math.random() * 100).toFixed(1)),
+            taxaNicole: parseFloat((Math.random() * 100).toFixed(1)),
+        });
+    }
+
+    return resultado;
+};
+
+const data = getUltimosMeses();
 
 const GraficoDeVendas = forwardRef<HTMLDivElement>((_props, ref) => {
     return (
@@ -45,6 +64,7 @@ const GraficoDeVendas = forwardRef<HTMLDivElement>((_props, ref) => {
                     >
                         <LabelList dataKey="taxaNicole" position="top" formatter={(val: number) => `${val}%`} />
                     </Line>
+
                 </LineChart>
             </ResponsiveContainer>
         </div>
