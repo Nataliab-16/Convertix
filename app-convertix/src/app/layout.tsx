@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Convértix - Monitoramento de Conver
 
 export default function RootLayout({children,}: Readonly<{children: React.ReactNode;}>) {
   return (
-    <html lang="pt-br">
+    <html lang="pt-br" className="w-full p-0 m-0">
       <head>
         <link rel="icon" href="/favicon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -15,7 +15,7 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
         <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
         
       </head>
-      <body className="poppins-regular w-full">
+      <body className="poppins-regular">
         <Header/>
         {children}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js" async defer></script>
