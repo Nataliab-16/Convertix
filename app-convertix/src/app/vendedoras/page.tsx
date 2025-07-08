@@ -7,26 +7,50 @@ import React, {
   FormEvent,
   useRef,
   useCallback,
+  useEffect,
 } from "react";
 
 export default function CadastroVendedora() {
   const [nome, setNome] = useState("");
-  const [imagens, setImagens] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [imagensBase64, setImagensBase64] = useState<string[]>([]);
+  const [vendedoras, setVendedoras] = useState<
+    { nome: string; imagens: string[] }[]
+  >([]);
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const gerarPreviews = (files: File[]) => {
-    const urls = files.map((file) => URL.createObjectURL(file));
-    setPreviewUrls(urls);
+  // Carregar vendedoras salvas
+  useEffect(() => {
+    const dadosSalvos = localStorage.getItem("vendedoras");
+    if (dadosSalvos) {
+      try {
+        setVendedoras(JSON.parse(dadosSalvos));
+      } catch (err) {
+        console.error("Erro ao carregar do localStorage:", err);
+      }
+    }
+  }, []);
+
+  // Converte arquivo em base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   const handleImagensChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
+    async (e: ChangeEvent<HTMLInputElement>) => {
       if (!e.target.files) return;
       const arquivos = Array.from(e.target.files);
-      setImagens(arquivos);
-      gerarPreviews(arquivos);
+
+      const base64Array = await Promise.all(
+        arquivos.map((file) => fileToBase64(file))
+      );
+
+      setImagensBase64(base64Array);
     },
     []
   );
@@ -36,7 +60,7 @@ export default function CadastroVendedora() {
       alert("Por favor, preencha o nome da vendedora.");
       return false;
     }
-    if (imagens.length === 0) {
+    if (imagensBase64.length === 0) {
       alert("Por favor, carregue pelo menos uma imagem.");
       return false;
     }
@@ -45,8 +69,7 @@ export default function CadastroVendedora() {
 
   const limparFormulario = () => {
     setNome("");
-    setImagens([]);
-    setPreviewUrls([]);
+    setImagensBase64([]);
     if (inputFileRef.current) inputFileRef.current.value = "";
   };
 
@@ -55,10 +78,16 @@ export default function CadastroVendedora() {
 
     if (!validarFormulario()) return;
 
-    // Simula envio
-    console.log("Nome:", nome);
-    console.log("Imagens:", imagens);
-    alert("Cadastro enviado.");
+    const novaVendedora = {
+      nome,
+      imagens: imagensBase64,
+    };
+
+    setVendedoras((prev) => {
+      const novaLista = [...prev, novaVendedora];
+      localStorage.setItem("vendedoras", JSON.stringify(novaLista));
+      return novaLista;
+    });
 
     limparFormulario();
   };
@@ -66,8 +95,8 @@ export default function CadastroVendedora() {
   return (
     <div className="flex">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      
-      <div className="max-w-sm mx-auto p-5">
+
+      <div className="max-w-4xl mx-auto p-5 w-full">
         <h1 className="text-2xl font-bold my-10">Cadastro de Vendedora</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -103,16 +132,15 @@ export default function CadastroVendedora() {
             />
           </div>
 
-          {/* Previews */}
-          {previewUrls.length > 0 && (
+          {/* Previews das imagens em base64 */}
+          {imagensBase64.length > 0 && (
             <div className="grid grid-cols-3 gap-2 mt-2">
-              {previewUrls.map((url, index) => (
+              {imagensBase64.map((url, index) => (
                 <img
                   key={index}
                   src={url}
                   alt={`Preview ${index + 1}`}
                   className="w-full h-24 object-cover rounded border"
-                  onLoad={() => URL.revokeObjectURL(url)}
                 />
               ))}
             </div>
@@ -141,6 +169,42 @@ export default function CadastroVendedora() {
             <span className="sr-only">Enviar cadastro</span>
           </button>
         </form>
+
+        {/* Tabela de Vendedoras Cadastradas */}
+        {vendedoras.length > 0 && (
+          <div className="mt-10">
+            <h2 className="text-xl font-semibold mb-4">
+              Vendedoras Cadastradas
+            </h2>
+            <table className="min-w-full table-auto border border-gray-300">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border px-4 py-2">Foto(s)</th>
+                  <th className="border px-4 py-2">Nome</th>
+                </tr>
+              </thead>
+              <tbody>
+                {vendedoras.map((vendedora, index) => (
+                  <tr key={index} className="text-center">
+                    <td className="border px-4 py-2">
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {vendedora.imagens.map((img, i) => (
+                          <img
+                            key={i}
+                            src={img}
+                            alt={`Vendedora ${index + 1} - Foto ${i + 1}`}
+                            className="w-16 h-16 object-cover rounded border"
+                          />
+                        ))}
+                      </div>
+                    </td>
+                    <td className="border px-4 py-2">{vendedora.nome}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
