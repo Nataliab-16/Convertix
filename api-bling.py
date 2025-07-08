@@ -29,21 +29,38 @@ def obter_headers(access_token):
         'Accept': 'application/json'
     }
 
-def buscar_lista_vendas(headers,data_inicial=None, data_final=None):
+def buscar_lista_vendas(headers, data_inicial=None, data_final=None):
     url = f'{API_BASE_URL}/pedidos/vendas'
-    params = {}
+    pagina = 1
+    limite = 100  # máximo permitido pela API
+    todas_vendas = []
 
-    if data_inicial:
-        params["dataInicial"] = f"{data_inicial}"
-    if data_final:
-        params["dataFinal"] = f"{data_final}"
+    while True:
+        params = {
+            "pagina": pagina,
+            "limite": limite
+        }
+        if data_inicial:
+            params["dataInicial"] = data_inicial
+        if data_final:
+            params["dataFinal"] = data_final
 
-    print("🔍 Enviando parâmetros para a API:", params)
+        print(f"📄 Buscando página {pagina} com params:", params)
+        resp = requests.get(url, headers=headers, params=params)
+        if resp.status_code != 200:
+            raise Exception(f'Erro ao buscar lista de pedidos: {resp.text}')
+        
+        vendas = resp.json().get('data', [])
+        if not vendas:
+            break
 
-    resp = requests.get(url, headers=headers, params=params)
-    if resp.status_code != 200:
-        raise Exception(f'Erro ao buscar lista de pedidos: {resp.text}')
-    return resp.json().get('data', [])
+        todas_vendas.extend(vendas)
+        pagina += 1
+
+        # Adiciona uma pausa entre páginas para respeitar rate limit
+        time.sleep(0.5)
+
+    return todas_vendas
 
 def buscar_detalhes_venda(venda_id, headers):
     url = f'{API_BASE_URL}/pedidos/vendas/{venda_id}'

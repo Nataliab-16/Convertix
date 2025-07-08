@@ -71,10 +71,6 @@ export default function Home() {
     }
 
     doc.save("Relatorio.pdf");
-
-
-
-
   };
 
 
@@ -158,15 +154,13 @@ export default function Home() {
 
                 // Mock de tentativas
                 const tentativasMock: Record<string, number> = {
-                  "Nicole Gonçalves": 120,
-                  "Ingrid Povoa": 114,
-                  "Mariana Carvalho": 98,
+                  "Nicole Gonçalves": 200,
+                  "Ingrid Povoa": 210,
+                  "Mariana Carvalho": 20,
                 };
 
                 const ignoradosRaw = localStorage.getItem("nomesIgnorados");
-                console.log("Nomes ignorados:", ignoradosRaw);
                 const nomesIgnorados = ignoradosRaw ? JSON.parse(ignoradosRaw) : [];
-                console.log("Nomes ignorados após parse:", nomesIgnorados);
 
                 const sellers = Object.entries(contagemPorVendedora)
                   .filter(([nome]) => !nomesIgnorados.includes(nome)) // <- filtro adicionado
