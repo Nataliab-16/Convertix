@@ -9,29 +9,40 @@ import React, {
   useCallback,
   useEffect,
 } from "react";
+import { toast, Toaster } from "sonner";
 
 export default function CadastroVendedora() {
+  const [ignorar, setIgnorar] = useState("");
   const [nome, setNome] = useState("");
   const [imagensBase64, setImagensBase64] = useState<string[]>([]);
   const [vendedoras, setVendedoras] = useState<
     { nome: string; imagens: string[] }[]
   >([]);
+  const [nomesIgnorados, setNomesIgnorados] = useState<string[]>([]);
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Carregar vendedoras salvas
   useEffect(() => {
-    const dadosSalvos = localStorage.getItem("vendedoras");
-    if (dadosSalvos) {
+    const dadosVendedoras = localStorage.getItem("vendedoras");
+    const dadosIgnorados = localStorage.getItem("nomesIgnorados");
+
+    if (dadosVendedoras) {
       try {
-        setVendedoras(JSON.parse(dadosSalvos));
+        setVendedoras(JSON.parse(dadosVendedoras));
       } catch (err) {
-        console.error("Erro ao carregar do localStorage:", err);
+        console.error("Erro ao carregar vendedoras:", err);
+      }
+    }
+
+    if (dadosIgnorados) {
+      try {
+        setNomesIgnorados(JSON.parse(dadosIgnorados));
+      } catch (err) {
+        console.error("Erro ao carregar nomes ignorados:", err);
       }
     }
   }, []);
 
-  // Converte arquivo em base64
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -45,11 +56,9 @@ export default function CadastroVendedora() {
     async (e: ChangeEvent<HTMLInputElement>) => {
       if (!e.target.files) return;
       const arquivos = Array.from(e.target.files);
-
       const base64Array = await Promise.all(
         arquivos.map((file) => fileToBase64(file))
       );
-
       setImagensBase64(base64Array);
     },
     []
@@ -57,11 +66,11 @@ export default function CadastroVendedora() {
 
   const validarFormulario = () => {
     if (!nome.trim()) {
-      alert("Por favor, preencha o nome da vendedora.");
+      toast.warning("Por favor, preencha o nome da vendedora.");
       return false;
     }
     if (imagensBase64.length === 0) {
-      alert("Por favor, carregue pelo menos uma imagem.");
+      toast.warning("Por favor, carregue pelo menos uma imagem.");
       return false;
     }
     return true;
@@ -75,13 +84,9 @@ export default function CadastroVendedora() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-
     if (!validarFormulario()) return;
 
-    const novaVendedora = {
-      nome,
-      imagens: imagensBase64,
-    };
+    const novaVendedora = { nome, imagens: imagensBase64 };
 
     setVendedoras((prev) => {
       const novaLista = [...prev, novaVendedora];
@@ -92,6 +97,27 @@ export default function CadastroVendedora() {
     limparFormulario();
   };
 
+  const adicionarNomeIgnorado = () => {
+    const nomeTrimado = ignorar.trim();
+    if (!nomeTrimado) return;
+    if (nomesIgnorados.includes(nomeTrimado)) {
+      toast.warning("Este nome já foi adicionado.");
+      return;
+    }
+
+    const novosNomes = [...nomesIgnorados, nomeTrimado];
+    setNomesIgnorados(novosNomes);
+    localStorage.setItem("nomesIgnorados", JSON.stringify(novosNomes));
+    setIgnorar("");
+    toast.success("Nome ignorado adicionado!");
+  };
+
+  const removerIgnorado = (nome: string) => {
+    const atualizados = nomesIgnorados.filter((n) => n !== nome);
+    setNomesIgnorados(atualizados);
+    localStorage.setItem("nomesIgnorados", JSON.stringify(atualizados));
+  };
+
   return (
     <div className="flex">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
@@ -100,7 +126,6 @@ export default function CadastroVendedora() {
         <h1 className="text-2xl font-bold my-10">Cadastro de Vendedora</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Campo Nome */}
           <div>
             <label htmlFor="nome" className="block font-semibold mb-1">
               Nome da Vendedora
@@ -116,7 +141,6 @@ export default function CadastroVendedora() {
             />
           </div>
 
-          {/* Campo Imagens */}
           <div>
             <label htmlFor="imagens" className="block font-semibold mb-1">
               Imagens da Vendedora
@@ -132,7 +156,6 @@ export default function CadastroVendedora() {
             />
           </div>
 
-          {/* Previews das imagens em base64 */}
           {imagensBase64.length > 0 && (
             <div className="grid grid-cols-3 gap-2 mt-2">
               {imagensBase64.map((url, index) => (
@@ -146,10 +169,9 @@ export default function CadastroVendedora() {
             </div>
           )}
 
-          {/* Botão Enviar */}
           <button
             type="submit"
-            className="text-white bg-green-400 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            className="text-white bg-green-400 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2"
           >
             <svg
               className="w-4 h-4"
@@ -170,7 +192,6 @@ export default function CadastroVendedora() {
           </button>
         </form>
 
-        {/* Tabela de Vendedoras Cadastradas */}
         {vendedoras.length > 0 && (
           <div className="mt-10">
             <h2 className="text-xl font-semibold mb-4">
@@ -184,27 +205,76 @@ export default function CadastroVendedora() {
                 </tr>
               </thead>
               <tbody>
-                {vendedoras.map((vendedora, index) => (
-                  <tr key={index} className="text-center">
-                    <td className="border px-4 py-2">
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        {vendedora.imagens.map((img, i) => (
-                          <img
-                            key={i}
-                            src={img}
-                            alt={`Vendedora ${index + 1} - Foto ${i + 1}`}
-                            className="w-16 h-16 object-cover rounded border"
-                          />
-                        ))}
-                      </div>
-                    </td>
-                    <td className="border px-4 py-2">{vendedora.nome}</td>
-                  </tr>
-                ))}
+                {vendedoras
+                  .filter((v) => !nomesIgnorados.includes(v.nome))
+                  .map((vendedora, index) => (
+                    <tr key={index} className="text-center">
+                      <td className="border px-4 py-2">
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {vendedora.imagens.map((img, i) => (
+                            <img
+                              key={i}
+                              src={img}
+                              alt={`Vendedora ${index + 1} - Foto ${i + 1}`}
+                              className="w-16 h-16 object-cover rounded border"
+                            />
+                          ))}
+                        </div>
+                      </td>
+                      <td className="border px-4 py-2">{vendedora.nome}</td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
         )}
+
+        {/* Lista de nomes ignorados */}
+        <div className="p-4 mt-10 bg-gray-100 rounded">
+          <h2 className="text-lg font-bold mb-4">Nomes a Ignorar</h2>
+          <div className="flex gap-2 mb-4">
+            <input
+              value={ignorar}
+              onChange={(e) => setIgnorar(e.target.value)}
+              placeholder="Digite um nome para ignorar"
+              className="flex-1 p-2 border rounded"
+            />
+            <button
+              onClick={adicionarNomeIgnorado}
+              className="px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Adicionar
+            </button>
+          </div>
+
+          {nomesIgnorados.length > 0 && (
+            <table className="table-auto border w-full">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="border px-4 py-2">Nome</th>
+                  <th className="border px-4 py-2">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {nomesIgnorados.map((nome, idx) => (
+                  <tr key={idx}>
+                    <td className="border px-4 py-2">{nome}</td>
+                    <td className="border px-4 py-2 text-center">
+                      <button
+                        onClick={() => removerIgnorado(nome)}
+                        className=" text-red-500 underline px-3 py-1 rounded"
+                      >
+                        Remover
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        <Toaster position="top-right" richColors />
       </div>
     </div>
   );

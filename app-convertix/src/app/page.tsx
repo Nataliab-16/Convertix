@@ -163,11 +163,18 @@ export default function Home() {
                   "Mariana Carvalho": 98,
                 };
 
-                const sellers = Object.entries(contagemPorVendedora).map(([nome, conversoes]) => {
-                  const tentativas = tentativasMock[nome] || 30;
-                  const taxa = ((conversoes / tentativas) * 100).toFixed(1) + "%";
-                  return { nome, conversoes, tentativas, taxa };
-                });
+                const ignoradosRaw = localStorage.getItem("nomesIgnorados");
+                console.log("Nomes ignorados:", ignoradosRaw);
+                const nomesIgnorados = ignoradosRaw ? JSON.parse(ignoradosRaw) : [];
+                console.log("Nomes ignorados após parse:", nomesIgnorados);
+
+                const sellers = Object.entries(contagemPorVendedora)
+                  .filter(([nome]) => !nomesIgnorados.includes(nome)) // <- filtro adicionado
+                  .map(([nome, conversoes]) => {
+                    const tentativas = tentativasMock[nome] || 30;
+                    const taxa = ((conversoes / tentativas) * 100).toFixed(1) + "%";
+                    return { nome, conversoes, tentativas, taxa };
+                  });
 
                 setSellersData(sellers);
               } catch (erro) {
