@@ -79,6 +79,11 @@ export default function Home() {
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       <main className={`flex-1 p-4 transition-all duration-300 ${sidebarOpen ? "md:ml-64" : "ml-0"}`}>
+        <h2 className="text-lg font-bold mb-4">Gráficos</h2>
+
+        <div className="mb-8">
+          <GraficoDeVendas ref={chartRef} />
+        </div>
         <div className="flex flex-col sm:flex-row flex-nowrap items-center justify-center sm:items-center gap-4 mb-6">
           {/* Data de início */}
           <div className="relative">
@@ -148,7 +153,7 @@ export default function Home() {
                 };
 
                 const sellers = Object.entries(contagemPorVendedora).map(([nome, conversoes]) => {
-                  const tentativas = tentativasMock[nome] || 100; 
+                  const tentativas = tentativasMock[nome] || 30; 
                   const taxa = ((conversoes / tentativas) * 100).toFixed(1) + "%";
                   return { nome, conversoes, tentativas, taxa };
                 });
@@ -163,50 +168,46 @@ export default function Home() {
           >
             Ver relatório do período
           </button>
-          <button>
+          <button className="w-full mx-4 sm:w-auto text-yellow-700 hover:text-white border border-yellow-800 hover:bg-yellow-900 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5">
             Gerar relatório do dia
           </button>
         </div>
 
-        <h2 className="text-lg font-bold mb-4">Painel de conversão</h2>
-
-        <div className="overflow-x-auto mb-8">
-          <table className="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" className="px-4 py-3">Vendedora</th>
-                <th scope="col" className="px-4 py-3">Conversões</th>
-                <th scope="col" className="px-4 py-3">Tentativas</th>
-                <th scope="col" className="px-4 py-3">Taxa de conversão</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sellersData.map(({ nome, conversoes, tentativas, taxa }) => (
-                <tr
-                  key={nome}
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                >
-                  <th
-                    scope="row"
-                    className="px-4 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
-                    {nome}
-                  </th>
-                  <td className="px-4 py-4">{conversoes}</td>
-                  <td className="px-4 py-4">{tentativas}</td>
-                  <td className="px-4 py-4">{taxa}</td>
+      {sellersData.length > 0 && (
+        <div>
+          <h2 className="text-lg font-bold mb-4">Painel de conversão</h2>
+          <div className="overflow-x-auto mb-8">
+            <table className="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th scope="col" className="px-4 py-3">Vendedora</th>
+                  <th scope="col" className="px-4 py-3">Conversões</th>
+                  <th scope="col" className="px-4 py-3">Tentativas</th>
+                  <th scope="col" className="px-4 py-3">Taxa de conversão</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {sellersData.map(({ nome, conversoes, tentativas, taxa }) => (
+                  <tr
+                    key={nome}
+                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                  >
+                    <th
+                      scope="row"
+                      className="px-4 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    >
+                      {nome}
+                    </th>
+                    <td className="px-4 py-4">{conversoes}</td>
+                    <td className="px-4 py-4">{tentativas}</td>
+                    <td className="px-4 py-4">{taxa}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-
-        <h2 className="text-lg font-bold mb-4">Gráficos</h2>
-
-        <div className="mb-8">
-          <GraficoDeVendas ref={chartRef} />
-        </div>
-
+      )}
         <div className="mb-4">
           <button
             type="button"
@@ -216,6 +217,7 @@ export default function Home() {
             Exportar em PDF
           </button>
         </div>
+        
       </main>
 
     </div>
