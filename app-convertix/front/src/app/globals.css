@@ -2,11 +2,6 @@
 @import "flowbite/src/themes/default";
 @import "flowbite";
 
-html, body {
-  width: 100% !important;
-  margin: 0;
-  padding: 0;
-}
 
 :root {
   --color-convertix-primary: #0c1f2c;
