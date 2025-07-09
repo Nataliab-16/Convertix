@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { Router } from "express"
 import bcrypt from 'bcrypt'
-import nodemailer from "nodemailer";
 
 const prisma = new PrismaClient()
 const router = Router()
@@ -148,52 +147,4 @@ router.patch("/:id", async (req, res) => {
     res.status(400).json(error)
   }
 })
-
-
-
-async function enviaEmail(nome: string, email: string, codigo: string) {
-  const transporter = nodemailer.createTransport({
-    host: "smtp-relay.brevo.com",
-    port: 587,
-    secure: false, // true for port 465, false for other ports
-    auth: {
-      user: "7e9a59001@smtp-brevo.com",
-      pass: "pjnRDJNTMxAavfOH",
-    },
-  });
-
-
-  const info = await transporter.sendMail({
-    from: 'nataliabrandao688@gmail.com', // sender address
-    to: email, // list of receivers
-    subject: "Re: Recuperação da senha", // Subject line
-    text: codigo, // plain text body
-    html: `<h3>Estimado Cliente: ${nome}</h3>
-          <h3>Aqui está seu código de recuperação: ${codigo}</h3>
-          <p>Morgana Moda Feminina</p>`
-
-  });
-}
-
-
-router.post("/enviaemail", async (req, res) => {
-  const { email, codigo } = req.body;
-
-  try {
-    const dados = await prisma.cliente.findUnique({
-      where: { email: email },
-    });
-
-    if (!dados) {
-      return res.status(404).json({ message: "Cliente não encontrado" });
-    }
-
-    await enviaEmail(dados.nome, email, codigo);
-    res.status(200).json({ message: "E-mail enviado com sucesso!" });
-  } catch (error) {
-    console.error("Erro ao enviar o e-mail:", error);
-    res.status(500).json({ message: "Erro ao enviar o e-mail" });
-  }
-});
-
 export default router

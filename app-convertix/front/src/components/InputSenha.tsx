@@ -17,6 +17,7 @@ export default function InputSenha({ register, name, placeholder }: InputSenhaPr
         className="form-control rounded-0 border-0 border-bottom pe-5"
         placeholder={placeholder || "Senha"}
         {...register(name)}
+        required
       />
 
       <span

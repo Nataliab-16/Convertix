@@ -32,7 +32,7 @@ export default function CadastroPage() {
     if (response.status == 201) {
       toast.success("Registrado com sucesso")
       setTimeout(() => {
-        router.push("/login");
+        router.push("/");
       }, 3000);
     }
 
@@ -109,7 +109,7 @@ export default function CadastroPage() {
                 <label htmlFor="senha" className="block mb-2 text-sm font-medium text-gray-700 ">Senha</label>
                 <InputSenha register={register} name="senha" placeholder="Digite sua senha" />
               </div>
-              <Link href={"/login"}>
+              <Link href={"/"}>
                 <p className="pb-4 text-sm font-light text-gray-500 dark:text-gray-400">
                   Já tem conta? <span className="font-medium  text-primary-600 hover:underline">Realize Login</span>
                 </p>

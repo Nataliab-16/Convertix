@@ -42,8 +42,8 @@ const GraficoDeVendas = forwardRef<HTMLDivElement>((_props, ref) => {
       }
 
       const tentativasMock: Record<string, number> = {
-        "Nicole Gonçalves": 120,
-        "Ingrid Povoa": 114,
+        "Nicole Gonçalves": 300,
+        "Ingrid Povoa": 300,
       };
 
       const formatar = (d: Date) => d.toISOString().split("T")[0];
