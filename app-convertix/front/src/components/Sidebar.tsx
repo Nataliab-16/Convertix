@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
+import { useClienteStore } from "@/context/clientes"
+import { useRouter } from "next/navigation";
+
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -16,6 +19,17 @@ interface NavItem {
 }
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
+
+    const { cliente, deslogaCliente } = useClienteStore()
+    const router = useRouter()
+
+
+    function sairCliente() {
+        deslogaCliente()
+        if (localStorage.getItem("client_key")) { localStorage.removeItem("client_key") }
+        router.push("/login")
+    }
+
   const pathname = usePathname();
 
   const isActive = (href: string) => pathname === href;
@@ -109,14 +123,17 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
             })}
 
             {/*Item sair */}
-            <li>
-              <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group cursor-pointer">
-                <svg className="w-6 h-6 text-yellow-300 dark:text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2" />
-                </svg>
-                <span className="flex-1 ms-3 whitespace-nowrap">Sair</span>
-              </div>
-            </li>
+            
+            <Link href={"/login"} onClick={sairCliente}>
+              <li>
+                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group cursor-pointer">
+                  <svg className="w-6 h-6 text-yellow-300 dark:text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2" />
+                  </svg>
+                  <span className="flex-1 ms-3 whitespace-nowrap">Sair</span>
+                </div>
+              </li>
+            </Link>
           </ul>
         </div>
       </aside>

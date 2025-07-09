@@ -3,12 +3,12 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
 import GraficoDeVendas from "@/components/GraficoVendas";
 import Sidebar from "@/components/Sidebar";
 import { toast, Toaster } from "sonner";
-
+import { useClienteStore } from "@/context/clientes";
 
 function CalendarIcon() {
   return (
@@ -38,7 +38,16 @@ export default function Home() {
   const [sellersData, setSellersData] = useState<{ nome: string; conversoes: number; tentativas: number; taxa: string }[]>([]);
   const chartRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
+  const { cliente } = useClienteStore();
 
+  const toastShown = useRef(false);
+
+  useEffect(() => {
+    if (cliente.nome && !toastShown.current) {
+      toast(<div className="text-lg poppins-regular">Bem-vindo(a), {cliente.nome}! =)</div>);
+      toastShown.current = true;
+    }
+  }, [cliente.nome]);
 
   const exportarPDF = async () => {
     const doc = new jsPDF();
