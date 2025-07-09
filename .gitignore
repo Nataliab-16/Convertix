@@ -1,11 +1,11 @@
-.env
+
 tokens.json
-__pycache__/
+**/__pycache__/
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+**/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -21,7 +21,7 @@ package.json
 /coverage
 
 # next.js
-/.next/
+**/.next/
 /out/
 
 # production
@@ -48,3 +48,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+package-lock.json
+.env.local
+
