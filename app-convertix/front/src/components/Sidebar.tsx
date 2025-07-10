@@ -47,7 +47,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
 
   const navItems: NavItem[] = [
     {
-      href: "/",
+      href: "/home",
       label: "Dashboard",
       icon: (
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 22 21">
