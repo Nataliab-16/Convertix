@@ -10,6 +10,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import React, { useEffect, useState, forwardRef } from "react";
+import {
+  buscarVendasPorPeriodo,
+  processarVendas,
+  formatarData,
+} from "../utils/relatorioVendas";
 
 const GraficoDeVendas = forwardRef<HTMLDivElement>((_props, ref) => {
   const [data, setData] = useState<any[]>([]);
@@ -42,35 +47,19 @@ const GraficoDeVendas = forwardRef<HTMLDivElement>((_props, ref) => {
         meses.push({ mes: nomesMeses[inicio.getMonth()], inicio, fim });
       }
 
-      // Objeto para armazenar as "tentativas" para cada vendedora (valor padrão)
       const tentativasMock: Record<string, number> = {};
-
-      const formatar = (d: Date) => d.toISOString().split("T")[0];
-      const calcularTaxa = (conversoes = 0, tentativas = 1) =>
-        parseFloat(((conversoes / tentativas) * 100).toFixed(1));
-
       const resultados: any[] = [];
-      // Usaremos um Set para armazenar os nomes únicos de vendedoras
       const nomesUnicos = new Set<string>();
 
       for (const { mes, inicio, fim } of meses) {
-        const url = `http://localhost:8080/pedidos/vendas?dataInicial=${formatar(inicio)}&dataFinal=${formatar(fim)}`;
         try {
-          const resposta = await fetch(url);
-          const dados = await resposta.json();
-
-          const conversoesPorVendedora: Record<string, number> = {};
-          dados.vendas.forEach((venda: any) => {
-            const nome = venda.nome_vendedora || "Desconhecida";
-            nomesUnicos.add(nome);
-            conversoesPorVendedora[nome] = (conversoesPorVendedora[nome] || 0) + 1;
-            // Caso ainda não exista um valor para esta vendedora, define como 20 (ou outro valor padrão)
-            tentativasMock[nome] = tentativasMock[nome] || 300;
-          });
+          const vendas = await buscarVendasPorPeriodo(formatarData(inicio), formatarData(fim));
+          const resultadosMensais = await processarVendas(vendas, tentativasMock);
 
           const linhaMes: any = { mes };
-          for (const nome of Object.keys(conversoesPorVendedora)) {
-            linhaMes[nome] = calcularTaxa(conversoesPorVendedora[nome], tentativasMock[nome]);
+          for (const r of resultadosMensais) {
+            linhaMes[r.nome] = parseFloat(r.taxa.replace("%", ""));
+            nomesUnicos.add(r.nome);
           }
 
           resultados.push(linhaMes);
@@ -79,13 +68,11 @@ const GraficoDeVendas = forwardRef<HTMLDivElement>((_props, ref) => {
           resultados.push({ mes });
         }
 
-        await esperar(600); // evita estourar o limite da API
+        await esperar(600); // evitar sobrecarga da API
       }
 
-      // Recupera os nomes das vendedoras a serem ignoradas, conforme armazenado no localStorage
       const ignoradosRaw = localStorage.getItem("nomesIgnorados");
       const nomesIgnorados = ignoradosRaw ? JSON.parse(ignoradosRaw) : [];
-      // Filtra as vendedoras, removendo as ignoradas
       const vendedoresFiltrados = Array.from(nomesUnicos).filter(
         (nome) => !nomesIgnorados.includes(nome)
       );

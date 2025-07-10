@@ -40,8 +40,8 @@ export default function LoginPage() {
       } else {
         if (localStorage.getItem("client_key")) { localStorage.removeItem("client_key") }
       }
-      toast.success("Logado com sucesso!");
-      router.push("/home")
+      toast.success("Dados corretos!");
+      router.push("/enviaCodigo2FA")
     } else if (response.status === 401 || response.status === 404) {
       toast.error("Email ou senha incorretos");
     } else {
