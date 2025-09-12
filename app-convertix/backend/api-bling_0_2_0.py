@@ -157,6 +157,37 @@ def get_detalhes_vendas():
 
     except Exception as e:
         return jsonify({"error": f"Erro interno: {str(e)}"}), 500
+    
+
+@app.route('/vendedora/<int:vendedora_id>', methods=['GET'])
+def get_nome_vendedora(vendedora_id):
+    try:
+        # Atualiza token de acesso
+        refresh_access_token()
+        tokens = carregar_tokens()
+        access_token = tokens.get('access_token')
+
+        if not access_token:
+            return jsonify({"error": "Token de acesso não encontrado. Faça login via /"}), 401
+
+        headers = obter_headers(access_token)
+        cache_vendedoras = {}
+
+        # Chama a função que busca o nome da vendedora
+        nome_vendedora = buscar_nome_vendedora(vendedora_id, headers, cache_vendedoras)
+
+        if nome_vendedora:
+            return jsonify({
+                "id_vendedora": vendedora_id,
+                "nome_vendedora": nome_vendedora
+            }), 200
+        else:
+            return jsonify({
+                "error": f"Não foi possível encontrar a vendedora com ID {vendedora_id}"
+            }), 404
+
+    except Exception as e:
+        return jsonify({"error": f"Erro interno: {str(e)}"}), 500
 
 # === Execução ===
 
