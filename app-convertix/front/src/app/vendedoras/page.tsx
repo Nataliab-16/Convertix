@@ -26,9 +26,9 @@ export default function CadastroVendedora() {
   }, []);
 
   const adicionarNomeIgnorado = async () => {
-    const nomeTrimado = ignorar.trim();
-    if (!nomeTrimado) return;
-    if (nomesIgnorados.includes(nomeTrimado)) {
+    const nomeIgnorado = ignorar.trim();
+    if (!nomeIgnorado) return;
+    if (nomesIgnorados.includes(nomeIgnorado)) {
       toast.warning("Este nome já foi adicionado.");
       return;
     }
@@ -37,11 +37,11 @@ export default function CadastroVendedora() {
       const resp = await fetch("http://localhost:3004/vendedoras/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome: nomeTrimado }),
+        body: JSON.stringify({ nome: nomeIgnorado }),
       });
 
       if (!resp.ok) throw new Error("Erro ao salvar nome");
-      setNomesIgnorados((prev) => [...prev, nomeTrimado]);
+      setNomesIgnorados((prev) => [...prev, nomeIgnorado]);
       setIgnorar("");
       toast.success("Nome ignorado adicionado!");
     } catch (err) {

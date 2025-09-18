@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import { toast, Toaster } from "sonner"
 import InputSenha from "@/components/InputSenha";
+import { FiAlertCircle } from "react-icons/fi";
 import Link from "next/link";
 
 type Inputs = {
@@ -111,7 +112,8 @@ export default function CadastroPage() {
               <div className="mb-3 position-relative">
                 <label htmlFor="senha" className="form-label">Senha</label>
                 <InputSenha register={register} name="senha" placeholder="Digite sua senha" />
-                <p className="text-green-500 text-xs text-left">Senha deve conter 8 caracteres, letras minúsculas, maiúsculas, números e símbolos</p>
+                
+                <p className="flex items-center gap-1 text-green-500 text-xs text-left"> <FiAlertCircle className="text-green-500 w-4 h-4" /> Senha deve conter 8 caracteres, letras minúsculas, maiúsculas, números e símbolos</p>
               </div>
 
               <Link href="/" className="d-block mb-3 text-center text-sm text-secondary">
