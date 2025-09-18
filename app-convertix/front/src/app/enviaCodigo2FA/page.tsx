@@ -30,7 +30,7 @@ export default function RecuperarSenha() {
                 toast.error("Erro ao enviar o código. Tente novamente.");
             }
         } catch (err) {
-            toast.error("Erro de rede ao tentar enviar o código.");
+            toast.error(err + "Erro de rede ao tentar enviar o código.");
         }
 
         reset();
@@ -59,7 +59,7 @@ export default function RecuperarSenha() {
                 toast.warning("Código incorreto ou expirado.");
             }
         } catch (err) {
-            toast.error("Erro ao validar o código.");
+            toast.error(err + "Erro ao validar o código.");
         }
 
         reset({ codigo: "" });

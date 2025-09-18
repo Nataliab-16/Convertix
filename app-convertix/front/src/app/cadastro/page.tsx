@@ -9,6 +9,7 @@ import { toast, Toaster } from "sonner"
 import InputSenha from "@/components/InputSenha";
 import { FiAlertCircle } from "react-icons/fi";
 import Link from "next/link";
+import Image from "next/image";
 
 type Inputs = {
   email: string
@@ -84,7 +85,7 @@ export default function CadastroPage() {
         {/* Lado esquerdo */}
         <div className=" col-12 col-md-6 d-flex flex-column justify-content-center align-items-center p-5 text-white" style={{ backgroundColor: '#0C1421' }}>
           <div className="text-center mb-4 d-flex flex-column align-items-center pd-personalizada"  >
-            <img src="/branco_png.png" alt="Logo Convertix" className="mb-3" style={{ width: '400px' }} />
+            <Image src="/branco_png.png" alt="Logo Convertix" className="mb-3" width={300} height={50} />
             <p className="fw-bold" style={{ fontSize: '1.8rem' }}>
               Conecte,<br />
               Converta <br />

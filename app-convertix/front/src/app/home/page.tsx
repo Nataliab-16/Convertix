@@ -44,8 +44,13 @@ export default function Home() {
   const chartRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const { cliente } = useClienteStore();
-
   const toastShown = useRef(false);
+
+  interface JsPDFWithAutoTable extends jsPDF {
+  lastAutoTable?: {
+    finalY: number;
+  };
+}
 
   useEffect(() => {
     if (cliente.nome && !toastShown.current) {
@@ -53,6 +58,7 @@ export default function Home() {
       toastShown.current = true;
     }
   }, [cliente.nome]);
+  
 
   const exportarPDF = async () => {
     const doc = new jsPDF();
@@ -70,7 +76,7 @@ export default function Home() {
     });
 
     // Posição abaixo da tabela
-    const finalY = (doc as any).lastAutoTable.finalY + 15;
+    const finalY = ((doc as JsPDFWithAutoTable).lastAutoTable?.finalY ?? 0) + 15;
 
     // Captura o gráfico como imagem
     if (chartRef.current) {

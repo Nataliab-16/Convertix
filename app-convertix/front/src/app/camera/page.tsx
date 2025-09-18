@@ -1,8 +1,8 @@
 "use client";
 import axios from "axios";
 import Sidebar from "@/components/Sidebar";
-import React, { useState, useEffect } from "react";
-import { toast, Toaster } from "sonner";
+import React, { useState} from "react";
+import { Toaster } from "sonner";
 
 export default function EnvioGravacao() {
   const [sidebarOpen, setSidebarOpen] = useState(false);

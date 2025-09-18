@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useClienteStore } from "@/context/clientes"
 import { useRouter } from "next/navigation";
 
@@ -20,7 +20,7 @@ interface NavItem {
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
 
-  const { cliente, deslogaCliente } = useClienteStore()
+  const { deslogaCliente } = useClienteStore()
   const router = useRouter()
 
 

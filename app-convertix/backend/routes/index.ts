@@ -5,7 +5,7 @@ import emailRoutes from './routes/email'
 import vendasRoutes from './routes/vendas'
 import vendedorasRoutes from './routes/vendedoras'
 const app = express()
-const port = 3004
+const port = process.env.PORT || 3004
 
 app.use(express.json())
 app.use(cors())

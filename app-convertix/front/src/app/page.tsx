@@ -9,6 +9,7 @@ import { useClienteStore } from "@/context/clientes"
 import { useRouter } from "next/navigation"
 import { toast, Toaster } from "sonner"
 import InputSenha from '@/components/InputSenha';
+import Image from 'next/image';
 
 type Inputs = {
   email: string
@@ -48,7 +49,7 @@ export default function LoginPage() {
       toast.error("Erro ao tentar logar. Tente novamente.");
     }
   } catch (error) {
-    toast.error("Erro na conexão com o servidor.");
+    toast.error(error + "Erro na conexão com o servidor.");
   }
 
 
@@ -64,7 +65,7 @@ return (
         {/* Lado esquerdo */}
         <div className="col-12 col-md-6 d-flex flex-column justify-content-center align-items-center p-5 text-white" style={{ backgroundColor: '#0C1421' }}>
           <div className="text-center mb-4 d-flex flex-column align-items-center pd-personalizada">
-            <img src="/branco_png.png" alt="Logo Convertix" style={{ width: '300px' }} className="img-fluid mb-3" />
+            <Image src="/branco_png.png" alt="Logo Convertix" className="img-fluid mb-3" width={300} height={50} />
             <p className="fw-bold text-center" style={{ fontSize: '1.8rem' }}>
               Conecte,<br />
               Converta <br />
@@ -86,7 +87,7 @@ return (
 
               <div className="mb-4 position-relative">
                 <label htmlFor="senha" className="form-label">Senha</label>
-                <InputSenha register={register} name="senha" placeholder="Digite sua senha" />
+                <InputSenha<Inputs> register={register} name="senha" placeholder="Digite sua senha" />
               </div>
 
               <div className="d-flex justify-content-between align-items-center mb-3">

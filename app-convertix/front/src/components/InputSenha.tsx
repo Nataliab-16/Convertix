@@ -1,13 +1,18 @@
 "use client";
 import { useState } from "react";
+import type { UseFormRegister, FieldValues, Path } from "react-hook-form";
 
-interface InputSenhaProps {
-  register: any;
-  name: string;
+interface InputSenhaProps<TFormValues extends FieldValues> {
+  register: UseFormRegister<TFormValues>;
+  name: Path<TFormValues>; // garante que o name seja uma chave do formulário
   placeholder?: string;
 }
 
-export default function InputSenha({ register, name, placeholder }: InputSenhaProps) {
+export default function InputSenha<TFormValues extends FieldValues>({
+  register,
+  name,
+  placeholder,
+}: InputSenhaProps<TFormValues>) {
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
   return (
@@ -26,7 +31,6 @@ export default function InputSenha({ register, name, placeholder }: InputSenhaPr
         onClick={() => setMostrarSenha((prev) => !prev)}
       >
         {mostrarSenha ? (
-          // Ocultar senha
           <svg
             className="w-6 h-6 text-gray-800 dark:text-white"
             aria-hidden="true"
@@ -45,7 +49,6 @@ export default function InputSenha({ register, name, placeholder }: InputSenhaPr
             />
           </svg>
         ) : (
-          // Mostrar senha
           <svg
             className="w-6 h-6 text-gray-800 dark:text-white"
             aria-hidden="true"
