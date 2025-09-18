@@ -111,6 +111,7 @@ export default function CadastroPage() {
               <div className="mb-3 position-relative">
                 <label htmlFor="senha" className="form-label">Senha</label>
                 <InputSenha register={register} name="senha" placeholder="Digite sua senha" />
+                <p className="text-green-500 text-xs text-left">Senha deve conter 8 caracteres, letras minúsculas, maiúsculas, números e símbolos</p>
               </div>
 
               <Link href="/" className="d-block mb-3 text-center text-sm text-secondary">

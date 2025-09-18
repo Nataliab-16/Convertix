@@ -30,3 +30,9 @@ model Venda {
   dataHora      DateTime                           
   @@map("vendas")
 }
+
+model Vendedora {
+  id           String   @db.VarChar(100) @id @default(uuid())
+  nome         String   @db.VarChar(60) @unique
+  @@map("vendedoras")
+}

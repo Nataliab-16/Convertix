@@ -71,8 +71,17 @@ const GraficoDeVendas = forwardRef<HTMLDivElement>((_props, ref) => {
         await esperar(600); // evitar sobrecarga da API
       }
 
-      const ignoradosRaw = localStorage.getItem("nomesIgnorados");
-      const nomesIgnorados = ignoradosRaw ? JSON.parse(ignoradosRaw) : [];
+        let nomesIgnorados: string[] = [];
+      try {
+        const resp = await fetch("http://localhost:3004/vendedoras/");
+        if (resp.ok) {
+          nomesIgnorados = await resp.json(); 
+        } else {
+          console.error("Erro ao buscar nomes ignorados do banco");
+        }
+      } catch (err) {
+        console.error("Falha ao buscar nomes ignorados:", err);
+      }
       const vendedoresFiltrados = Array.from(nomesUnicos).filter(
         (nome) => !nomesIgnorados.includes(nome)
       );
