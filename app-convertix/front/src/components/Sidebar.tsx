@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useClienteStore } from "@/context/clientes"
 import { useRouter } from "next/navigation";
 
@@ -20,15 +20,15 @@ interface NavItem {
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
 
-    const { cliente, deslogaCliente } = useClienteStore()
-    const router = useRouter()
+  const { deslogaCliente } = useClienteStore()
+  const router = useRouter()
 
 
-    function sairCliente() {
-        deslogaCliente()
-        if (localStorage.getItem("client_key")) { localStorage.removeItem("client_key") }
-        router.push("/login")
-    }
+  function sairCliente() {
+    deslogaCliente()
+    if (localStorage.getItem("client_key")) { localStorage.removeItem("client_key") }
+    router.push("/login")
+  }
 
   const pathname = usePathname();
 
@@ -47,7 +47,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
 
   const navItems: NavItem[] = [
     {
-      href: "/",
+      href: "/home",
       label: "Dashboard",
       icon: (
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 22 21">
@@ -62,6 +62,19 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
       icon: (
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 18">
           <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z" />
+        </svg>
+      ),
+    },
+    {
+      href: "/camera",
+      label: "Envio de imagens",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path d="M4 7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3.172a2 2 0 0 1-1.414-.586l-1.828-1.828A2 2 0 0 0 12.172 4h-0.344a2 2 0 0 0-1.414.586L8.586 6.414A2 2 0 0 1 7.172 7H4zm8 3a4 4 0 1 1 0 8 4 4 0 0 1 0-8z" />
         </svg>
       ),
     },
@@ -87,9 +100,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
 
       {/* Sidebar*/}
       <aside
-        className={`absolute z-40 h-full w-64 bg-gray-50 dark:bg-gray-800 transform transition-transform duration-300 md:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`absolute z-40 h-full w-64 bg-gray-50 dark:bg-gray-800 transform transition-transform duration-300 md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto ">
@@ -100,18 +112,16 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                 <li key={href}>
                   <Link href={href}>
                     <div
-                      className={`flex items-center p-2 rounded-lg group ${
-                        active
+                      className={`flex items-center p-2 rounded-lg group ${active
                           ? "bg-yellow-300 text-gray-900"
                           : "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                      }`}
+                        }`}
                     >
                       <span
-                        className={`transition duration-75 ${
-                          active
+                        className={`transition duration-75 ${active
                             ? "text-gray-900"
                             : "text-yellow-300 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                        }`}
+                          }`}
                       >
                         {icon}
                       </span>
@@ -123,7 +133,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
             })}
 
             {/*Item sair */}
-            
+
             <Link href={"/"} onClick={sairCliente}>
               <li>
                 <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group cursor-pointer">

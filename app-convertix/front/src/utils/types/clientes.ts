@@ -1,4 +1,4 @@
 export interface ClienteI {
-    id: String
-    nome: String
-    email: String }
+    id: string
+    nome: string
+    email: string }

@@ -9,6 +9,11 @@ import GraficoDeVendas from "@/components/GraficoVendas";
 import Sidebar from "@/components/Sidebar";
 import { toast, Toaster } from "sonner";
 import { useClienteStore } from "@/context/clientes";
+import {
+  buscarVendasPorPeriodo,
+  processarVendas,
+  formatarData,
+} from "../../utils/relatorioVendas";
 
 function CalendarIcon() {
   return (
@@ -39,8 +44,13 @@ export default function Home() {
   const chartRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const { cliente } = useClienteStore();
-
   const toastShown = useRef(false);
+
+  interface JsPDFWithAutoTable extends jsPDF {
+  lastAutoTable?: {
+    finalY: number;
+  };
+}
 
   useEffect(() => {
     if (cliente.nome && !toastShown.current) {
@@ -48,6 +58,7 @@ export default function Home() {
       toastShown.current = true;
     }
   }, [cliente.nome]);
+  
 
   const exportarPDF = async () => {
     const doc = new jsPDF();
@@ -65,7 +76,7 @@ export default function Home() {
     });
 
     // Posição abaixo da tabela
-    const finalY = (doc as any).lastAutoTable.finalY + 15;
+    const finalY = ((doc as JsPDFWithAutoTable).lastAutoTable?.finalY ?? 0) + 15;
 
     // Captura o gráfico como imagem
     if (chartRef.current) {
@@ -136,58 +147,33 @@ export default function Home() {
                 return;
               }
 
-              setLoading(true)
-
-              toast.success(`Gerando relatório de ${startDate ? startDate.toLocaleDateString() : "sem data de início"} até ${endDate ? endDate.toLocaleDateString() : "sem data de fim"}`);
-              const formatarParaAPI = (data: Date | null): string => {
-                return data ? data.toISOString().split("T")[0] : "";
-              };
-
-              const inicioFormatado = formatarParaAPI(startDate);
-              const fimFormatado = formatarParaAPI(endDate);
-              console.log(`Relatório gerado de ${inicioFormatado} até ${fimFormatado}`);
-
-              const url = `http://localhost:8080/pedidos/vendas?dataInicial=${inicioFormatado}&dataFinal=${fimFormatado}`;
+              setLoading(true);
+              toast.success(`Gerando relatório de ${startDate.toLocaleDateString()} até ${endDate.toLocaleDateString()}`);
 
               try {
-                const resposta = await fetch(url);
-                const dados = await resposta.json();
-                console.log("Dados recebidos:", dados);
+                const inicioFormatado = formatarData(startDate);
+                const fimFormatado = formatarData(endDate);
 
-                // Agrupar vendas por nome_vendedora
-                const contagemPorVendedora: Record<string, number> = {};
-                dados.vendas.forEach((venda: any) => {
-                  const nome = venda.nome_vendedora || "Vendedora Desconhecida";
-                  contagemPorVendedora[nome] = (contagemPorVendedora[nome] || 0) + 1;
-                });
+                const vendas = await buscarVendasPorPeriodo(inicioFormatado, fimFormatado);
 
-                // Mock de tentativas
                 const tentativasMock: Record<string, number> = {
                   "Nicole Gonçalves": 300,
                   "Ingrid Povoa": 300,
                   "Mariana Carvalho": 20,
                 };
 
-                const ignoradosRaw = localStorage.getItem("nomesIgnorados");
-                const nomesIgnorados = ignoradosRaw ? JSON.parse(ignoradosRaw) : [];
+                const resultados = await processarVendas(vendas, tentativasMock);
 
-                const sellers = Object.entries(contagemPorVendedora)
-                  .filter(([nome]) => !nomesIgnorados.includes(nome)) // <- filtro adicionado
-                  .map(([nome, conversoes]) => {
-                    const tentativas = tentativasMock[nome] || 20;
-                    const taxa = ((conversoes / tentativas) * 100).toFixed(1) + "%";
-                    return { nome, conversoes, tentativas, taxa };
-                  });
-
-                setSellersData(sellers);
+                setSellersData(resultados);
               } catch (erro) {
                 console.error("Erro ao buscar relatório:", erro);
               } finally {
-                setLoading(false); // Finaliza loader
+                setLoading(false);
                 setStartDate(null);
                 setEndDate(null);
               }
             }}
+
             type="button"
             className=" w-full sm:w-auto text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
           >

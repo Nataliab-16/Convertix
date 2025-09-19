@@ -21,3 +21,18 @@ model Cliente {
   senha        String   @db.VarChar(60)
   @@map("clientes")
 }
+
+model Venda {
+  id            String   @id @db.VarChar(100)  
+  total         Float                               
+  idVendedora   BigInt                                
+  nomeVendedora String   @db.VarChar(255)           
+  dataHora      DateTime                           
+  @@map("vendas")
+}
+
+model Vendedora {
+  id           String   @db.VarChar(100) @id @default(uuid())
+  nome         String   @db.VarChar(60) @unique
+  @@map("vendedoras")
+}

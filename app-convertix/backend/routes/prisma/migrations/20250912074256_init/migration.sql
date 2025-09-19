@@ -8,5 +8,16 @@ CREATE TABLE "clientes" (
     CONSTRAINT "clientes_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "vendas" (
+    "id" VARCHAR(100) NOT NULL,
+    "total" DOUBLE PRECISION NOT NULL,
+    "idVendedora" BIGINT NOT NULL,
+    "nomeVendedora" VARCHAR(255) NOT NULL,
+    "dataHora" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "vendas_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "clientes_email_key" ON "clientes"("email");
