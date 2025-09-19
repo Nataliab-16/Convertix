@@ -1,9 +1,9 @@
 import express from 'express'
 import cors from 'cors'
-import clientesRoutes from './routes/clientes'
-import emailRoutes from './routes/email'
-import vendasRoutes from './routes/vendas'
-import vendedorasRoutes from './routes/vendedoras'
+import clientesRoutes from './clientes'
+import emailRoutes from './email'
+import vendasRoutes from './vendas'
+import vendedorasRoutes from './vendedoras'
 const app = express()
 const port = process.env.PORT || 3004
 
