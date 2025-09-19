@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "api-bling_0_2_0.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.11"
+      }
     }
   ],
   "routes": [
